@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+pydantic
+python-dotenv
+groq
+numpy
+scikit-learn
+requests
+python-multipart
+jinja2
+redis
+asyncio

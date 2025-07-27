@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banking Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chat-container {
+            width: 400px;
+            height: 600px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            scroll-behavior: smooth;
+            max-height: calc(100% - 140px);
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            max-width: 100%;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.bot {
+            justify-content: flex-start;
+        }
+
+        .message-content {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 20px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.bot .message-content {
+            background: white;
+            color: #333;
+            border: 1px solid #e1e5e9;
+            border-bottom-left-radius: 5px;
+        }
+
+        .options-container {
+            width: 100%;
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+
+        .option-button {
+            display: block;
+            width: calc(100% - 20px);
+            margin: 5px 0;
+            padding: 10px 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .chat-input-container {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e1e5e9;
+            border-radius: 0 0 15px 15px;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .chat-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 25px;
+            outline: none;
+            font-size: 14px;
+            padding-right: 50px;
+        }
+
+        .send-button {
+            position: absolute;
+            right: 25px;
+            bottom: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .typing-indicator {
+            display: none;
+            margin: 10px 0;
+        }
+
+        .typing-indicator.show {
+            display: flex;
+            align-items: center;
+        }
+
+        .typing-dots {
+            background: white;
+            border: 1px solid #e1e5e9;
+            border-radius: 20px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .typing-dots span {
+            height: 8px;
+            width: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            animation: typing 1.5s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div id="bank-name">🏦 SecureBank Assistant</div>
+        </div>
+
+        <div class="chat-messages" id="chat-messages">
+            <div class="message bot">
+                <div class="message-content">
+                    Hello! I'm your banking assistant. I can help you with:
+                    <br>• Account balance & transactions
+                    <br>• Card management & blocking
+                    <br>• Loan applications & status
+                    <br>• General banking information
+                    <br><br>How can I assist you today?
+                </div>
+            </div>
+        </div>
+            
+        <div class="typing-indicator" id="typing-indicator">
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+
+        <div class="chat-input-container">
+            <input type="text" id="chat-input" class="chat-input" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
+            <button class="send-button" onclick="sendMessage()">➤</button>
+        </div>
+    </div>
+
+    <script>
+        const sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        const currentUserId = 'user123'; // Default user
+        let isWaitingForResponse = false;
+
+        function addMessage(content, isUser = false, options = null) {
+            const messagesContainer = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+            
+            let messageContent = `<div class="message-content">${content}</div>`;
+            
+            if (options && options.length > 0) {
+                messageContent += '<div class="options-container">';
+                options.forEach(option => {
+                    messageContent += `<button class="option-button" onclick="selectOption('${option.id}')">${option.text}</button>`;
+                });
+                messageContent += '</div>';
+            }
+            
+            messageDiv.innerHTML = messageContent;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function selectOption(optionId) {
+            const optionButtons = document.querySelectorAll('.option-button');
+            let selectedText = '';
+            optionButtons.forEach(button => {
+                if (button.onclick.toString().includes(optionId)) {
+                    selectedText = button.textContent;
+                }
+            });
+
+            addMessage(`Selected: ${selectedText}`, true);
+            
+            const optionsContainers = document.querySelectorAll('.options-container');
+            optionsContainers.forEach(container => container.remove());
+            
+            sendMessageToAPI(`I want to proceed with option: ${optionId}`);
+        }
+
+        function showTypingIndicator() {
+            document.getElementById('typing-indicator').classList.add('show');
+            const messagesContainer = document.getElementById('chat-messages');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            document.getElementById('typing-indicator').classList.remove('show');
+        }
+
+        async function sendMessageToAPI(message) {
+            if (isWaitingForResponse) return;
+            
+            isWaitingForResponse = true;
+            showTypingIndicator();
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_id: currentUserId,
+                        session_id: sessionId,
+                        message: message
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                hideTypingIndicator();
+                
+                if (data.requires_selection && data.options) {
+                    addMessage(data.response, false, data.options);
+                } else {
+                    addMessage(data.response, false);
+                }
+                
+            } catch (error) {
+                hideTypingIndicator();
+                addMessage('Sorry, I encountered an error. Please try again.', false);
+                console.error('Error:', error);
+            } finally {
+                isWaitingForResponse = false;
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            
+            if (!message || isWaitingForResponse) return;
+            
+            addMessage(message, true);
+            input.value = '';
+            
+            sendMessageToAPI(message);
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Auto-focus on input when page loads
+        window.onload = function() {
+            document.getElementById('chat-input').focus();
+        };
+    </script>
+</body>
+</html>

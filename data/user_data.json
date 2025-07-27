@@ -1,0 +1,14 @@
+{
+  "user123": {
+    "name": "John Doe",
+    "account_number": "1234567890",
+    "cards": [
+      {
+        "card_id": "card_001",
+        "type": "credit",
+        "last_four": "1234",
+        "status": "active"
+      }
+    ]
+  }
+}
