@@ -91,40 +91,44 @@ python run.py
 ### 5. Access the Interface
 Open your browser and navigate to: `http://localhost:8000`
 
-## 💬 Usage Examples
 
-### Loan Application
-User: "apply for loan"
-Agent: "Step 1: Loan Amount - How much would you like to borrow?"
-User: "15000"
-Agent: "Step 2: Loan Purpose - What will you use this loan for?"
-User: "home renovation"
-Agent: "Step 3: Annual Income - What is your yearly gross income?"
-User: "75000"
-Agent: "✅ Application submitted successfully! ID: LOAN004..."
+# Example Usage
+## 💼 Loan Application
 
+**User:** "apply for loan"  
+**Agent:** "Step 1: Loan Amount - How much would you like to borrow?"  
+**User:** "15000"  
+**Agent:** "Step 2: Loan Purpose - What will you use this loan for?"  
+**User:** "home renovation"  
+**Agent:** "Step 3: Annual Income - What is your yearly gross income?"  
+**User:** "75000"  
+**Agent:** "✅ Application submitted successfully! ID: LOAN004..."
 
-### Card Management
+---
 
+## 💳 Card Management
 
-User: "card management"
-Agent: "What would you like to do with your cards today?"
-User: [Selects "Apply for New Card"]
-Agent: "What type of card would you like to apply for?"
-User: [Selects "Credit Card"]
-Agent: "Which Credit card brand would you prefer?"
-User: [Selects "Visa"]
-Agent: "🎉 Congratulations! Your Visa credit card has been approved!"
+**User:** "card management"  
+**Agent:** "What would you like to do with your cards today?"  
+**User:** [Selects "Apply for New Card"]  
+**Agent:** "What type of card would you like to apply for?"  
+**User:** [Selects "Credit Card"]  
+**Agent:** "Which Credit card brand would you prefer?"  
+**User:** [Selects "Visa"]  
+**Agent:** "🎉 Congratulations! Your Visa credit card has been approved!"
 
-### Context Switching
+---
 
-User: "apply for loan"
-Agent: "Step 1: Loan Amount..."
-User: "5000"
-Agent: "Step 2: Loan Purpose..."
-User: "block card" [Context Switch]
-Agent: [Shows card selection]
-User: [Selects card to block]
-Agent: "✅ Card blocked successfully!"
-User: "continue loan" [Resume Previous Process]
-Agent: "Continuing with your $5,000 loan application. Step 2: Purpose..."
+## 🔄 Context Switching
+
+**User:** "apply for loan"  
+**Agent:** "Step 1: Loan Amount - How much would you like to borrow?"  
+**User:** "5000"  
+**Agent:** "Step 2: Loan Purpose - What will you use this loan for?"  
+**User:** "block card" _(Context Switch)_  
+**Agent:** [Shows card selection]  
+**User:** [Selects card to block]  
+**Agent:** "✅ Card blocked successfully!"  
+**User:** "continue loan" _(Resume Previous Process)_  
+**Agent:** "Continuing with your $5,000 loan application. Step 2: Purpose..."
+
